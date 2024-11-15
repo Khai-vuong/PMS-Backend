@@ -13,6 +13,8 @@ async function bootstrap() {
   });
 
   await app.listen(process.env.PORT || 4000);
+
+  console.log('App is listening on port ' + (process.env.PORT || 4000));
 }
 bootstrap();
 
