@@ -7,7 +7,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:5173',  // Development origin
-      'https://pms-frontend-production.up.railway.app'  // Production origin
+      'https://pms-frontend-production.up.railway.app:4173'  // Production origin
     ],
     credentials: true, // Allow credentials (cookies)
   });
