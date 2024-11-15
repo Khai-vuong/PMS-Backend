@@ -7,12 +7,12 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:5173',  // Development origin
-      'https://pms-frontend-production.up.railway.app:4173'  // Production origin
+      'https://pms-frontend-production.up.railway.app'  // Production origin
     ],
-    credentials: true, // Allow credentials (cookies)
+    credentials: true,
   });
 
-  await app.listen(4000); //must be at last line}
+  await app.listen(process.env.PORT || 4000);
 }
 bootstrap();
 
