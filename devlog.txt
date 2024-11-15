@@ -1,0 +1,44 @@
+DEV LOG
+
+18/10
+Về session: session và user's info được lưu trên Request object, được giữ dưới dạng cookie,
+serialize và deserialize một cách nào đó
+Ta dùng PassportStrategy và AuthGuard để kích hoạt cơ chế lưu info khi đăng nhập
+Cài đặt session ở main.ts
+
+ĐỪNG BAO GIỜ ĐỤNG CÁC FILE LIÊN QUAN ĐẾN AUTH (UTILS, AUTH,...)
+t code cái này 5h rồi ấy!!!
+
+
+23/10
+Chức năng Authenticate đổi từ session qua jwt
+
+GetUser -> GetUserID.
+Pros:
+ Linh động hơn, đảm bảo tính logic nhất định.
+ Giảm thiểu payload cho jwt
+Cons:
+ Mất thêm 1 lần query (Có thể giảm thiểu tác động qua async)
+
+Chuyển tất cả các DTOs về src/DTOs
+
+Xóa Login Module và Signup Module, tích hợp vào Auth Module
+
+Tính năng logout đưa qua bên Frontend
+
+
+26/10
+Dự kiến:
+Task.status deafault = 'Undone'
+Task.due = created_time + 7d
+Thêm Task.comment (Có thể null)
+
+Add User.mails[] : strings
+Modidy all ids to uuid() but only limited by 6 characters
+
+30/10
+Apply các thay đổi ngày 26. migrate name = change_1
+
+11/11.
+Thêm Mail và MR vào DB, apply DB với migration = change 2
+TODO: studing downloading
