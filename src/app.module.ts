@@ -8,6 +8,8 @@ import { LobbyModule } from './lobby/lobby.module';
 import { TasksModule } from './tasks/tasks.module';
 import { FileModule } from './file/file.module';
 import { MergeRequestModule } from './merge-request/merge-request.module';
+import { MailModule } from './mail/mail.module';
+import { UtilsModule } from './utils/utils.module';
 
 
 @Module({
@@ -18,7 +20,9 @@ import { MergeRequestModule } from './merge-request/merge-request.module';
     LobbyModule,
     TasksModule,
     FileModule,
-    MergeRequestModule
+    MergeRequestModule,
+    MailModule,
+    UtilsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
