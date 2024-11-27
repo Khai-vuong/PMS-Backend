@@ -7,6 +7,7 @@ import { TestModule } from './test/test.module';
 import { LobbyModule } from './lobby/lobby.module';
 import { TasksModule } from './tasks/tasks.module';
 import { FileModule } from './file/file.module';
+import { MergeRequestModule } from './merge-request/merge-request.module';
 
 
 @Module({
@@ -16,7 +17,8 @@ import { FileModule } from './file/file.module';
     TestModule,
     LobbyModule,
     TasksModule,
-    FileModule
+    FileModule,
+    MergeRequestModule
   ],
   controllers: [AppController],
   providers: [AppService],

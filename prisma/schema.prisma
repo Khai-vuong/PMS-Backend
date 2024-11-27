@@ -61,14 +61,16 @@ model Task {
 model File {
   fid           String   @id @default(dbgenerated("substring(gen_random_uuid()::text, 1, 6)")) @db.Char(6)
   name          String
+  extended_name String?
+  status        String   @default("None") //Enum: "None", Pending", "Approved", "Rejected"   
   extension     String
   size          String
   path          String
   uploaded_time DateTime @default(now())
 
   // Relationships
-  project      Project       @relation(fields: [project_pid], references: [pid])
-  project_pid  String
+  project      Project?       @relation(fields: [project_pid], references: [pid])
+  project_pid  String?
   task         Task          @relation(fields: [task_tid], references: [tid])
   task_tid     String
   uploader     User          @relation(fields: [uploader_id], references: [uid])

@@ -5,16 +5,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: [
-      'http://localhost:5173',  // Development origin
-      'https://pms-frontend-production.up.railway.app'  // Production origin
-    ],
-    credentials: true,
+    origin: 'http://localhost:5173', // Or your frontend URL
+    credentials: true, // Allow credentials (cookies)
   });
 
-  await app.listen(process.env.PORT || 4000);
-
-  console.log('App is listening on port ' + (process.env.PORT || 4000));
+  await app.listen(4000); //must be at last line}
 }
 bootstrap();
 

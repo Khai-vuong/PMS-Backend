@@ -7,13 +7,17 @@ import { UserRoleDTO } from "DTOs/user-role.dto";
 
 export class TaskReturnDTO {
   @IsString()
+  tid: string;
+
+  @IsString()
   name: string;
   @IsString()
   description: string;
   @IsOptional()
   @IsString()
   assignee: string;
-  constructor(name: string, description: string, assignee: string) {
+  constructor(tid: string, name: string, description: string, assignee: string) {
+    this.tid = tid;
     this.name = name;
     this.description = description;
     this.assignee = assignee;
