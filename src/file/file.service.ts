@@ -34,7 +34,6 @@ export class FileService {
       data: {
         name: file.originalname,
         extension: extname(file.originalname),
-        status: project_id !== 'ni' ? 'Approved' : 'None',
         size: file.size + ' bytes',
         path: file.destination,
         project:
@@ -117,7 +116,13 @@ export class FileService {
   async downloadFileByPid(pid: string, res: any) {
     const project = await this.prismaService.project.findUnique({
       where: { pid },
-      include: { files: true },
+      include: {
+        files: {
+          where: {
+            status: 'Approved', // Lọc file có trạng thái "Approved"
+          },
+        },
+      },
     });
     if (!project) throw new HttpException('Project not found', 404);
 

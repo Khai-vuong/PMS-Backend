@@ -137,4 +137,21 @@ export class TestService {
             return { message: "The project 'generated' already exists" };
         }
     }
+
+    async getDatabase() {
+            const tables = ['user', 'project', 'task', 'file', 'mergeRequest', 'mail'];
+
+            const data = await Promise.all(
+                tables.map(table => this.prisma[table].findMany())
+            );
+
+            return {
+                users: data[0],
+                projects: data[1],
+                tasks: data[2],
+                files: data[3],
+                MR: data[4],
+                mail: data[5]
+            };
+    }
 }

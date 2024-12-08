@@ -114,4 +114,52 @@ export class MailService {
 
         return new PageDTO<MailListDto>(returnData.data, pageMeta);
     }
+
+
+
+    async sendMailToPM(pid: string, tid: string, mrid: string) {
+        try {
+            const [existingProject, existingTask, existingMergeRequest] = await Promise.all([
+              this.prisma.project.findUnique({ where: { pid: pid }, include: { manager_ids: true } }),
+              this.prisma.task.findUnique({ where: { tid: tid } }),
+              this.prisma.mergeRequest.findUnique({ where: { mrid: mrid } }),
+            ]);
+          
+            if (!existingProject) {
+              throw new NotFoundException("Project not found");
+            }
+            if (!existingTask) {
+              throw new NotFoundException("Task not found");
+            }
+            if (!existingMergeRequest) {
+              throw new NotFoundException("Merge request not found");
+            }
+
+            let mids = [];
+            console.log('Pms:', existingProject.manager_ids);
+            existingProject.manager_ids.forEach(async (manager) => {
+                const newMail = await this.prisma.mail.create({
+                    data: {
+                        content: `A merge request has been created for task ${existingTask.name}.`,
+                        category: 'MergeRequest',
+                        recipient: {
+                            connect: { uid: manager.uid }
+                        },
+                        merge_request: {
+                            connect: { mrid: mrid }
+                        }
+                    }
+                })
+
+                mids.push(newMail.mid);
+            });
+
+            return mids;
+            
+
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+        
+    }    
 }

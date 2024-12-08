@@ -23,8 +23,16 @@ export class LobbyService {
         if (!project) {
             throw new NotFoundException("Project not found");
         }
-        if (!project.tasks.length) {
-            throw new NotFoundException("No task found");
+        if (project.tasks.length === 0) {
+            const pageMeta = {
+                pageCount: 0,
+                pageSize: 0,
+                currentPage: 0,
+                hasPreviousPage: false,
+                hasNextPage: false
+            };
+            const returnData = new PageDTO<TaskReturnDTO>([], pageMeta);
+            return returnData;
         }
         return this.Pagination(project.tasks, page, pageSize);
     }
@@ -42,9 +50,6 @@ export class LobbyService {
         }
         else {
             data = tasks.slice(start, end);
-        }
-        if (data.length === 0) {
-            throw new NotFoundException("No task found in this page");
         }
         const taskReturnData = await Promise.all(data.map(async (task) => {
             const assigneeUsername = await this.getUserName(task.assignee_id);
@@ -85,6 +90,7 @@ export class LobbyService {
 
         const role = await this.prisma.getUserRole(userID, pid) as 'Project Manager' | 'Member' | 'Guest';
         const data = new InitLobbyDTO(user.username, role, project.name, project.description, project.model, project.phase, await this.getTasks(pid, '1', '5', userID));
+        
         return data;
 
     }

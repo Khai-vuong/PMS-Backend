@@ -1,19 +1,22 @@
 import { IsArray, IsDate, IsOptional, IsString } from "class-validator";
 
 export class CreateTaskDto {
+  @IsString()
+  name: string;
 
-    @IsString()
-    name: string;
+  @IsString()
+  description: string;
 
-    @IsString()
-    description: string;
+  @IsString()
+  status?: string;
 
-    @IsString()
-    status: string;
+  @IsString()
+  comment?: string;
 
-    @IsString()
-    comment: string;
+  @IsString()
+  assignee: string;
 
-    @IsDate()
-    due: Date;
+  @IsOptional()
+  @IsDate()
+  due?: Date;
 }

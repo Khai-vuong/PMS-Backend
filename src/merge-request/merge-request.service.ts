@@ -35,7 +35,7 @@ export class MergeRequestService {
     });
     if (files) {
       for (const file of files) {
-        if (file.status !== 'None' && file.status !== 'Rejected') continue;
+        if (file.status !== 'None') continue;
         const updatedFile = await this.prismaService.file.update({
           where: { fid: file.fid },
           data: { status: 'Pending' },
@@ -56,6 +56,8 @@ export class MergeRequestService {
         files: { connect: files.map(file => ({ fid: file.fid })) },
       },
     });
+
+    console.log( JSON.stringify(mr));
     return { message: `Merge request ${mr.mrid} created` };
   }
 

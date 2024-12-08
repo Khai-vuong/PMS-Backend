@@ -28,6 +28,12 @@ export class TasksController {
     return this.tasksService.createMergeRequestPost(tid, comment, user.userID);
   }
 
+  @UseGuards(LocalGuard)
+  @Get('name')
+  async getName(@Query('tid') tid: string) {
+    return this.tasksService.getName(tid);
+  }
+
   // @UseGuards(LocalGuard)
   // @Get('all')
   // async findAll() {

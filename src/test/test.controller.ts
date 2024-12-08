@@ -36,4 +36,9 @@ export class TestController {
         console.log(uid)
         return uid;
     }
+
+    @Get('database')
+    async getDatabse() {
+        return this.testService.getDatabase();
+    }
 }

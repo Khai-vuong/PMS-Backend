@@ -1,110 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  uid          String  @id @default(dbgenerated("substring(gen_random_uuid()::text, 1, 6)")) @db.Char(6)
-  username     String  @unique
-  password     String
-  google_id    String?
-  email        String
-  login_method String  @default("LOCAL") // "GOOGLE" or "LOCAL"
-
-  // Relationships
+  uid              String         @id @default(dbgenerated("\"substring\"((gen_random_uuid())::text, 1, 6)")) @db.Char(6)
+  username         String         @unique
+  password         String
+  google_id        String?
+  email            String
+  login_method     String         @default("LOCAL")
+  files            File[]
+  mails            Mail[]
+  approved_MRs     MergeRequest[] @relation("Approver")
+  sent_MRs         MergeRequest[] @relation("Sender")
+  tasks            Task[]
   managed_projects Project[]      @relation("ManagerProjects")
   project_ids      Project[]      @relation("MemberProjects")
-  files            File[]
-  tasks            Task[] // May not be used
-  sent_MRs         MergeRequest[] @relation("Sender") // sent merge requests
-  approved_MRs     MergeRequest[] @relation("Approver") // approved merge requests
-  mails            Mail[] // Mails received by the user
 }
 
 model Project {
-  pid          String   @id @default(dbgenerated("substring(gen_random_uuid()::text, 1, 6)")) @db.Char(6)
+  pid          String   @id @default(dbgenerated("\"substring\"((gen_random_uuid())::text, 1, 6)")) @db.Char(6)
   name         String
   description  String
-  model        String //Enum: Waterfall, Scrum
+  model        String
   phase        String
   created_time DateTime @default(now())
-
-  // Relationships
-  tasks       Task[]
-  files       File[]
-  manager_ids User[] @relation("ManagerProjects")
-  members     User[] @relation("MemberProjects")
+  files        File[]
+  tasks        Task[]
+  manager_ids  User[]   @relation("ManagerProjects")
+  members      User[]   @relation("MemberProjects")
 }
 
 model Task {
-  tid          String   @id @default(dbgenerated("substring(gen_random_uuid()::text, 1, 6)")) @db.Char(6)
-  name         String
-  description  String
-  status       String   @default("Undone") //Enum: "Undone", "Done". Others are added in MRs
-  comment      String?
-  created_time DateTime @default(now())
-  due          DateTime @default(dbgenerated("(now() + interval '7 days')::timestamp"))
-
-  // Relationships
-  files         File[]
-  project       Project        @relation(fields: [project_pid], references: [pid])
+  tid           String         @id @default(dbgenerated("\"substring\"((gen_random_uuid())::text, 1, 6)")) @db.Char(6)
+  name          String
+  description   String
+  status        String         @default("Undone")
+  comment       String?
+  created_time  DateTime       @default(now())
+  due           DateTime       @default(dbgenerated("((now() + '7 days'::interval))::timestamp without time zone"))
   project_pid   String
-  assignee      User           @relation(fields: [assignee_id], references: [uid])
   assignee_id   String
+  files         File[]
   mergeRequests MergeRequest[]
+  assignee      User           @relation(fields: [assignee_id], references: [uid])
+  project       Project        @relation(fields: [project_pid], references: [pid])
 }
 
 model File {
-  fid           String   @id @default(dbgenerated("substring(gen_random_uuid()::text, 1, 6)")) @db.Char(6)
+  fid           String        @id @default(dbgenerated("\"substring\"((gen_random_uuid())::text, 1, 6)")) @db.Char(6)
   name          String
-  extended_name String?
-  status        String   @default("None") //Enum: "None", Pending", "Approved", "Rejected"   
-  extension     String
   size          String
+  uploaded_time DateTime      @default(now())
+  project_pid   String?
+  task_tid      String
+  uploader_id   String
+  extension     String
+  mrid          String?       @db.Char(6)
   path          String
-  uploaded_time DateTime @default(now())
-
-  // Relationships
-  project      Project?       @relation(fields: [project_pid], references: [pid])
-  project_pid  String?
-  task         Task          @relation(fields: [task_tid], references: [tid])
-  task_tid     String
-  uploader     User          @relation(fields: [uploader_id], references: [uid])
-  uploader_id  String
-  mergeRequest MergeRequest? @relation(fields: [mrid], references: [mrid])
-  mrid         String?       @db.Char(6)
+  extended_name String?
+  status        String        @default("None")
+  mergeRequest  MergeRequest? @relation(fields: [mrid], references: [mrid])
+  project       Project?      @relation(fields: [project_pid], references: [pid])
+  task          Task          @relation(fields: [task_tid], references: [tid])
+  uploader      User          @relation(fields: [uploader_id], references: [uid])
 }
 
 model MergeRequest {
-  mrid       String   @id @default(dbgenerated("substring(gen_random_uuid()::text, 1, 6)")) @db.Char(6)
-  comment    String?
-  status     String   @default("Pending") //Enum: "Pending", "Approved", "Rejected"
-  created_at DateTime @default(now())
-
-  // Relationships
-  files        File[]
-  sender       User    @relation("Sender", fields: [sender_uid], references: [uid])
+  mrid         String   @id @default(dbgenerated("\"substring\"((gen_random_uuid())::text, 1, 6)")) @db.Char(6)
+  comment      String?
+  status       String   @default("Pending")
+  created_at   DateTime @default(now())
   sender_uid   String
-  approver     User?   @relation("Approver", fields: [approver_uid], references: [uid])
   approver_uid String?
-  task         Task    @relation(fields: [tid], references: [tid])
   tid          String
+  files        File[]
   mails        Mail[]
+  approver     User?    @relation("Approver", fields: [approver_uid], references: [uid])
+  sender       User     @relation("Sender", fields: [sender_uid], references: [uid])
+  task         Task     @relation(fields: [tid], references: [tid])
 }
 
 model Mail {
-  mid        String   @id @default(dbgenerated("substring(gen_random_uuid()::text, 1, 6)")) @db.Char(6)
-  content    String
-  category   String   @default("Authorization") //Enum: "Authorization" or "MergeRequest"
-  created_at DateTime @default(now())
-
-  // Relationships
-  merge_request MergeRequest @relation(fields: [mrid], references: [mrid])
+  mid           String       @id @default(dbgenerated("\"substring\"((gen_random_uuid())::text, 1, 6)")) @db.Char(6)
+  content       String
+  category      String       @default("Authorization")
+  created_at    DateTime     @default(now())
   mrid          String
-  recipient     User         @relation(fields: [uid], references: [uid])
   uid           String
+  merge_request MergeRequest @relation(fields: [mrid], references: [mrid])
+  recipient     User         @relation(fields: [uid], references: [uid])
 }
